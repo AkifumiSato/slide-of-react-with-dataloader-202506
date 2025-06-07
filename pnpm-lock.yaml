@@ -20,6 +20,13 @@ importers:
       vue:
         specifier: ^3.5.16
         version: 3.5.16(typescript@5.8.3)
+    devDependencies:
+      prettier:
+        specifier: 3.5.3
+        version: 3.5.3
+      prettier-plugin-slidev:
+        specifier: 1.0.5
+        version: 1.0.5(prettier@3.5.3)
 
 packages:
 
@@ -575,6 +582,10 @@ packages:
 
   '@slidev/client@51.8.1':
     resolution: {integrity: sha512-dDhaST5xeiDxUZ2EuoHc5EQtJFduWtfiPU8HbP7Yc8IuopyyHErXldSsulYkxN49D3eZVbx0+4bD8xIocdsyjw==}
+    engines: {node: '>=18.0.0'}
+
+  '@slidev/parser@0.47.5':
+    resolution: {integrity: sha512-KvqOEhIFuMDu8CjAsehMNKlAnnmAn2TRHiEymc3CMadid05oWa5zgTxqEyMxUl2rjWpYs3A1yDiendZsGYs3HA==}
     engines: {node: '>=18.0.0'}
 
   '@slidev/parser@51.8.1':
@@ -2108,6 +2119,11 @@ packages:
   pptxgenjs@4.0.0:
     resolution: {integrity: sha512-iXpmNbivy64cxb4W05nDpUBkhoa73qCmvDZ2CTXYhvvX7LkJKAs6wWEEWlm3OSVJdaZtjY+AAmWgcmwNH8fSkA==}
 
+  prettier-plugin-slidev@1.0.5:
+    resolution: {integrity: sha512-1xaKzOAX17QAcn1roUgQIAfeio3HPYYefCgzxh6Bzk+5rJJxq0I8HUhLrUyv9nCpIP6e9CDv/yDQSdEeqqRUuA==}
+    peerDependencies:
+      prettier: ^3.2.4
+
   prettier@3.5.3:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
     engines: {node: '>=14'}
@@ -3377,6 +3393,11 @@ snapshots:
       - vite
       - vue-template-compiler
       - vue-template-es2015-compiler
+
+  '@slidev/parser@0.47.5':
+    dependencies:
+      '@slidev/types': 0.47.5
+      js-yaml: 4.1.0
 
   '@slidev/parser@51.8.1(@nuxt/kit@3.17.5)(@vue/compiler-sfc@3.5.16)(markdown-it-async@2.2.0)(postcss@8.5.4)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(yaml@2.8.0))':
     dependencies:
@@ -5271,6 +5292,11 @@ snapshots:
       https: 1.0.0
       image-size: 1.2.1
       jszip: 3.10.1
+
+  prettier-plugin-slidev@1.0.5(prettier@3.5.3):
+    dependencies:
+      '@slidev/parser': 0.47.5
+      prettier: 3.5.3
 
   prettier@3.5.3: {}
 

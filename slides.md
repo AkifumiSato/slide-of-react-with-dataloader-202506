@@ -1,6 +1,6 @@
 ---
 theme: default
-background: https://images.unsplash.com/photo-1504966981333-1ac8809be1ca?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+background: https://images.unsplash.com/photo-1638414154639-0fbc5bceb80f?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 class: text-center
 highlighter: shiki
 lineNumbers: false
@@ -14,7 +14,7 @@ mdc: true
 
 # DataLoaderのすゝめ
 
-React Server Componentsをより「らしく」する
+Meta流データフェッチ設計
 
 ---
 
@@ -39,11 +39,33 @@ React Server Componentsをより「らしく」する
 ```
 
 ---
+transition: fade
+---
 
-# 要約
+# 先に結論
+
+より詳細な内容を知りたい方は、Zennを読んでください
+
+![](/public/zenn-capture.png)
+
+---
+
+# 先に結論
 
 DataLoaderはいいぞ
 
 - Metaはバッチングとキャッシュで、保守性とパフォーマンスを両立してる
-- DataLoaderはこれを簡単に実現する手段
-- Ryan Florence氏もbatch-loaderを公開したばかり
+- [DataLoader](https://www.npmjs.com/package/dataloader)はこれを簡単に実現する手段
+- [batch-loader](https://www.npmjs.com/package/@ryanflorence/batch-loader)（Ryan Florence氏作）も同様の目的で作られたもの
+
+---
+
+#　MEMO
+
+構成案メモ
+
+- 見づらい実装を提示
+- 見やすい実装を提示
+- N+1問題
+- バッチングとキャッシング
+- DataLoader

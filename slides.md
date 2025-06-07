@@ -59,13 +59,171 @@ DataLoaderはいいぞ
 - [batch-loader](https://www.npmjs.com/package/@ryanflorence/batch-loader)（Ryan Florence氏作）も同様の目的で作られたもの
 
 ---
+transition: fade
+---
 
-#　MEMO
+# よくある実装
 
-構成案メモ
+ブログ記事一覧の細粒度なAPIとデータフェッチ設計例
 
-- 見づらい実装を提示
-- 見やすい実装を提示
-- N+1問題
-- バッチングとキャッシング
-- DataLoader
+```tsx
+export async function Page(props: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const page = searchParams.page ? Number(searchParams.page) : 1;
+  const posts = await fetchPosts({
+    page,
+  }); // Post[]
+
+  // ...`posts`を参照
+}
+
+type Post = {
+  id: string;
+  title: string;
+  authorIds: string[];
+  summary: string;
+};
+```
+
+---
+
+# よくある実装
+
+ブログ記事一覧の細粒度なAPIとデータフェッチ設計例
+
+```tsx {*}{maxHeight:'350px'}
+export async function Page(props: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+
+  // ベースとなるブログ一覧を取得
+  const page = searchParams.page ? Number(searchParams.page) : 1;
+  const posts = await fetchPosts({
+    page,
+  });
+
+  // ブログ一覧を補強する情報を一括で取得
+  const postIds = posts.map((post) => post.id);
+  const uniqueAuthorIds = Array.from(
+    new Set(posts.flatMap((post) => post.authorIds)),
+  );
+  const [allAuthors, commentCounts, viewCounts] = await Promise.all([
+    fetchAuthors(uniqueAuthorIds),
+    fetchCommentCountsForPosts(postIds),
+    fetchViewCountsForPosts(postIds),
+  ]);
+
+  // `richPosts: RichPost[]`を組み立て
+  const authorsMap = new Map(allAuthors.map((author) => [author.id, author]));
+  const commentCountsMap = new Map(
+    commentCounts.map((item) => [item.postId, item.count]),
+  );
+  const viewCountsMap = new Map(
+    viewCounts.map((item) => [item.postId, item.count]),
+  );
+  const richPosts = posts.map((post) => {
+    const authors = post.authorIds
+      .map((id) => authorsMap.get(id))
+      .filter((author) => author !== undefined);
+    const comments = commentCountsMap.get(post.id) ?? 0;
+    const viewCount = viewCountsMap.get(post.id) ?? 0;
+
+    return {
+      ...post,
+      authors,
+      comments,
+      viewCount,
+    };
+  });
+
+  // ...`richPosts`を参照
+}
+```
+
+---
+
+# 問題点
+
+やりたいことに対して、実装都合の概念が登場する
+
+- やりたいことは「記事を取得する」「著者情報なども取得する」
+- 実装都合で`RichPost[]`という概念が登場する
+- もっと愚直にやりたいことを実装に表現したい
+
+---
+
+# 理想と考えられる実装
+
+理想=Metaにおける考え方と、個人的な主観も入る
+
+```tsx {*}{maxHeight:'350px'}
+// page.tsx
+export async function Page(props: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const page = searchParams.page ? Number(searchParams.page) : 1;
+  const posts = await fetchPosts({
+    page,
+  });
+
+  // `posts`をループして`<PostCassette>`を組み立てる
+}
+
+// post-cassette.tsx
+export async function PostCassette({ post }: { post: Post }) {
+  const [authors, comments, viewCount] = await Promise.all([
+    fetchAuthors(post.authorIds),
+    fetchCommentCount(post.id),
+    fetchViewCount(post.id),
+  ]);
+
+  // ...`authors`, `comments`, `viewCount`を参照
+}
+```
+
+---
+
+# 問題点
+
+このままだと致命的なパフォーマンス劣化が発生しうる
+
+- 典型的なN+1の通信が発生する
+
+---
+
+# Batching/Caching
+
+Metaで使われているアプローチ
+
+- Batching: JavaScriptのマイクロタスクキューを「待つ」ことで、N+1を取りまとめる
+- Caching: 同一データの取得はキャッシュされる
+
+---
+
+# DataLoader
+
+RSC時代の設計をより「らしく」するライブラリ
+
+- Batching/Cachingを容易に実現するライブラリ
+- Meta（GraphQLのコミュニティ）より公開されている
+
+```tsx
+const authorLoader = new DataLoader(authorsBatch);
+authorLoader.load("1");
+authorLoader.load("2");
+// 呼び出しはDataLoaderによってまとめられ、`authorsBatch(["1", "2"])`が呼び出される
+```
+
+---
+layout: center
+---
+
+# DataLoader、ぜひ使ってみてください
+
+---
+
+# End

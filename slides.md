@@ -225,5 +225,7 @@ layout: center
 # DataLoader、ぜひ使ってみてください
 
 ---
+layout: center
+---
 
 # End
